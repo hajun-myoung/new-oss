@@ -6,14 +6,31 @@ import Chip from "@mui/material/Chip";
 
 import HelpIcon from "@mui/icons-material/Help";
 
-import { useCallback, useState } from "react";
-import { Link } from "react-router-dom";
+import { useCallback, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+
+import * as API from "../api.js";
 
 export default function IngredientInputPage() {
   const [ingredients, setIngredients] = useState<Array<string>>([]);
   const [inputValue, setInputValue] = useState<string>("");
   const [tools, setTools] = useState<Array<string>>([]);
   const [inputValue4tools, setInputValue4tools] = useState<string>("");
+  const [styles, setStyles] = useState<Array<string>>([]);
+  const [inputValue4style, setInputValue4style] = useState<string>("");
+
+  const navigation = useNavigate();
+
+  const handleGetRecipe = useCallback(async () => {
+    const response = await API.post("getrecipe", {
+      styles,
+      ingredients,
+      tools,
+    });
+
+    const newRecipe = response.data.recipe;
+    navigation("/recipe", { state: { recipe: newRecipe } });
+  }, [ingredients, navigation, tools]);
 
   const handleAddIngredient = useCallback(() => {
     if (inputValue.trim()) {
@@ -21,6 +38,13 @@ export default function IngredientInputPage() {
       setInputValue("");
     }
   }, [ingredients, inputValue]);
+
+  const handleAddStyle = useCallback(() => {
+    if (inputValue4style.trim()) {
+      setStyles([...styles, inputValue4style.trim()]);
+      setInputValue4style("");
+    }
+  }, [inputValue4style, styles]);
 
   const handleDeleteIngredient = useCallback(
     (ingredientToDelete: string) => {
@@ -56,14 +80,46 @@ export default function IngredientInputPage() {
         textAlign: "center",
       }}
     >
-      <Typography variant="h4" gutterBottom sx={{ mb: 2 }}>
-        Add your INGREDIENTS and the TOOLS:
+      <Typography variant="h4" gutterBottom sx={{ mb: 4 }}>
+        원하는 스타일, 사용할 식재료와 조리도구를 입력해주세요:
       </Typography>
       <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
         <TextField
-          label="Ingredient"
+          label="스타일"
+          value={inputValue4style}
+          onChange={(e) => {
+            // if (isValidInput(e.target.value)) {
+            setInputValue4style(e.target.value);
+            // } else {
+            // alert("영어와 공백만 가능합니다");
+            // }
+          }}
+          sx={{ mr: 2 }}
+        />
+        <Button variant="contained" onClick={handleAddStyle}>
+          Add
+        </Button>
+      </Box>
+      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mb: 2 }}>
+        {styles.map((style, index) => (
+          <Chip
+            key={index}
+            label={style}
+            onDelete={() => handleDeleteIngredient(style)}
+          />
+        ))}
+      </Box>
+      <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+        <TextField
+          label="식재료"
           value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
+          onChange={(e) => {
+            // if (isValidInput(e.target.value)) {
+            setInputValue(e.target.value);
+            // } else {
+            // alert("영어와 공백만 가능합니다");
+            // }
+          }}
           sx={{ mr: 2 }}
         />
         <Button variant="contained" onClick={handleAddIngredient}>
@@ -81,7 +137,7 @@ export default function IngredientInputPage() {
       </Box>
       <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
         <TextField
-          label="Tool"
+          label="조리도구"
           value={inputValue4tools}
           onChange={(e) => setInputValue4tools(e.target.value)}
           sx={{ mr: 2 }}
@@ -99,11 +155,19 @@ export default function IngredientInputPage() {
           />
         ))}
       </Box>
-      <Button variant="contained" component={Link} to="/recommendations">
+      {/* <Button variant="contained" component={Link} to="/recipe">
+        추천 레시피 받기
+      </Button> */}
+      <Button variant="contained" onClick={handleGetRecipe}>
         추천 레시피 받기
       </Button>
       <Box
-        sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          mt: 3,
+        }}
       >
         <Box sx={{ display: "flex" }}>
           <HelpIcon

@@ -1,30 +1,35 @@
-import React from "react";
-import { Box, Typography, Card, CardMedia, CardContent } from "@mui/material";
-import { useParams } from "react-router-dom";
-
-const dummyRecipe = {
-  id: 1,
-  title: "Spaghetti Carbonara",
-  image: "https://via.placeholder.com/600x400",
-  ingredients: [
-    "Spaghetti",
-    "Eggs",
-    "Parmesan Cheese",
-    "Bacon",
-    "Black Pepper",
-  ],
-  instructions: [
-    "Boil the spaghetti.",
-    "Cook the bacon until crisp.",
-    "Mix eggs and parmesan.",
-    "Combine spaghetti, bacon, and egg mixture.",
-    "Serve with a sprinkle of black pepper.",
-  ],
-};
+import React, { useEffect, useState } from "react";
+import { Box, Typography, Card, CardContent, Button } from "@mui/material";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const RecipeDetailPage = () => {
-  const { id } = useParams();
-  const recipe = dummyRecipe; // In real case, fetch the recipe based on ID
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [parsedRecipe, setParsedRecipe] = useState({
+    name: "",
+    time: "",
+    difficulty: "",
+    cost: "",
+    steps: [],
+  });
+
+  useEffect(() => {
+    if (!location.state || !location.state.recipe) {
+      navigate("/input");
+      return;
+    }
+
+    const recipe = location.state.recipe;
+    const lines = recipe.split("\n");
+    const name = lines[0].split(": ")[1];
+    const time = lines[1].split(": ")[1];
+    const difficulty = lines[2].split(": ")[1];
+    const cost = lines[3].split(": ")[1];
+    const steps = lines
+      .slice(4)
+      .map((step: string) => step.replace(/^\d+\. /, ""));
+    setParsedRecipe({ name, time, difficulty, cost, steps });
+  }, [location, navigate]);
 
   return (
     <Box
@@ -33,41 +38,35 @@ const RecipeDetailPage = () => {
         flexDirection: "column",
         alignItems: "center",
         padding: 2,
+        justifyContent: "center",
+        width: "100vw",
+        height: "100vh",
       }}
     >
-      <Card>
-        <CardMedia
-          component="img"
-          height="400"
-          image={recipe.image}
-          alt={recipe.title}
-        />
+      <Card sx={{ backgroundColor: "#EDEDE9" }}>
         <CardContent>
           <Typography variant="h4" gutterBottom>
-            {recipe.title}
+            {parsedRecipe.name}
           </Typography>
-          <Typography variant="h6" gutterBottom>
-            Ingredients
-          </Typography>
-          <Box component="ul">
-            {recipe.ingredients.map((ingredient, index) => (
-              <Typography component="li" key={index}>
-                {ingredient}
-              </Typography>
-            ))}
-          </Box>
           <Typography variant="h6" gutterBottom sx={{ mt: 2 }}>
-            Instructions
+            단계별 레시피
           </Typography>
           <Box component="ol">
-            {recipe.instructions.map((instruction, index) => (
-              <Typography component="li" key={index}>
-                {instruction}
+            {parsedRecipe.steps.map((step, index) => (
+              <Typography component="li" key={index} sx={{ marginBottom: 1 }}>
+                {step}
               </Typography>
             ))}
           </Box>
         </CardContent>
       </Card>
+      <Button
+        onClick={() => {
+          navigate(-1);
+        }}
+      >
+        돌아가기
+      </Button>
     </Box>
   );
 };
