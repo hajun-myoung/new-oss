@@ -9,17 +9,11 @@ import HelpIcon from "@mui/icons-material/Help";
 import { useCallback, useState } from "react";
 import { Link } from "react-router-dom";
 
-interface positionCoordi {
-  top: number;
-  left: number;
-}
-
 export default function IngredientInputPage() {
   const [ingredients, setIngredients] = useState<Array<string>>([]);
   const [inputValue, setInputValue] = useState<string>("");
   const [tools, setTools] = useState<Array<string>>([]);
   const [inputValue4tools, setInputValue4tools] = useState<string>("");
-  const [visible, setVisible] = useState<boolean>(true);
 
   const handleAddIngredient = useCallback(() => {
     if (inputValue.trim()) {
@@ -110,9 +104,6 @@ export default function IngredientInputPage() {
       </Button>
       <Box
         sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}
-        onClick={() => {
-          setVisible((prev) => !prev);
-        }}
       >
         <Box sx={{ display: "flex" }}>
           <HelpIcon
@@ -121,16 +112,9 @@ export default function IngredientInputPage() {
           />
           <Typography>왜 영어로만 식재료와 조리도구를 받나요?</Typography>
         </Box>
-        <Box
-          className={visible ? "toggleOn" : "toggleOff"}
-          sx={{ overflow: "hidden" }}
-        >
+        <Box sx={{ overflow: "hidden" }}>
           <Typography>
-            검색 결과 퀄리티를 높이기 위해 레시피 데이터셋을 이용했어요
-          </Typography>
-          <Typography>
-            한글 데이터셋은 문자 인코딩 깨짐으로 인해 영문 데이터셋을
-            사용하였고(...) 그래서에요
+            검색 결과 퀄리티를 높이기 위해 레시피 데이터셋을 이용했기 때문이에요
           </Typography>
         </Box>
       </Box>

@@ -36,11 +36,3 @@
     transform: rotate(360deg);
   }
 }
-
-.toggleOn {
-  height: 100%;
-}
-
-.toggleOff {
-  height: 0px;
-}
