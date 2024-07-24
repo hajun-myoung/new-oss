@@ -1,7 +1,8 @@
 import axios from "axios";
 
 // const serverUrlUser = "http://localhost:8000/";
-const serverUrlUser = "http://3.34.187.76:8000/";
+// const serverUrlUser = "http://3.34.187.76:8000/";
+const serverUrlUser = "https://server-vslo2r5eha-du.a.run.app/";
 
 async function get(endpoint, params = "") {
   const serverUrl = serverUrlUser;
